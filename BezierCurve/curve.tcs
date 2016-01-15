@@ -1,0 +1,14 @@
+#version 440
+layout (vertices = 5) out;
+uniform int NumSegments;
+uniform int NumStrips;
+
+void main()
+{
+	//pass along the vertex position unmodified
+	gl_out[gl_InvocationID].gl_Position = gl_in[gl_InvocationID].gl_Position;
+	
+	//Define the tesselation levels
+	gl_TessLevelOuter[0] = float(NumStrips);//1 curve
+	gl_TessLevelOuter[1] = float(NumSegments);//
+}
