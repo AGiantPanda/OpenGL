@@ -42,11 +42,7 @@ GLfloat secondTime = 0.0f;
 
 GLfloat vertices[] = {
 	//vertex
-	-2, -2, 0,
-	-2, 2, 0,
 	0, -1, 0,
-	2, 2, 0,
-	2, -2, 0,
 };
 
 void initVBO()//vbo的生成与vao的绑定
@@ -79,6 +75,8 @@ void init()
 		std::cout << "shader link failed\n" << std::endl;
 		std::cout << shader.log() << std::endl;
 	}
+	shader.printActiveAttribs();
+	shader.printActiveUniforms();
 }
 
 void display()
@@ -95,7 +93,7 @@ void display()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	shader.use();
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	//glEnable(GL_CULL_FACE);
 	//glFrontFace(GL_CCW);
@@ -103,7 +101,7 @@ void display()
 	//use vaoID & draw quads
 
 	glm::mat4 view;
-	view = glm::lookAt(glm::vec3(0.0, 0.0, 5.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	view = glm::lookAt(glm::vec3(0.0, 0.0, 8.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 	glm::mat4 projection = glm::perspective(GLfloat(45.0), (GLfloat)WIDTH / (GLfloat)HEIGHT, 0.1f, 100.0f);
 	glm::mat4 rotate = arcball.GetArcballMatrix();
 	glm::mat4 model;
@@ -111,8 +109,6 @@ void display()
 
 	shader.setUniform("MVP", MVP);
 	shader.setUniform("num", 50);
-	//shader.printActiveAttribs();
-	//shader.printActiveUniforms();
 	glBindVertexArray(vao);
 	glDrawArrays(GL_POINTS, 0, 1);
 
