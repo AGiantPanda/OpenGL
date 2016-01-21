@@ -1,7 +1,7 @@
 #version 430 core
 
 layout (points) in;
-layout (triangle_strip, max_vertices = 100) out;
+layout (points, max_vertices = 100) out;
 
 in VS_OUT{
 	int num;
@@ -18,7 +18,7 @@ void main()
 	vec3 p3 = vec3(1, 2, 0);
 	vec3 p4 = vec3(2, -2, 0);
 
-	float delta = 1 / gs_in[0].num;
+	float delta = 1 / float(gs_in[0].num);
 
 	for(int i = 0; i<= gs_in[0].num; i++){
 		float u = i * delta;

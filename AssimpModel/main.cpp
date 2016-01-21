@@ -13,11 +13,9 @@
 #include "glm.hpp"
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
-
 #include "Arcball.h"
 #include "myShader.h"
-
-#pragma comment(lib, "SOIL.lib")
+#include "model.h"
 
 bool stateSwitch = false;
 GLuint vertexID;
@@ -45,6 +43,10 @@ GLfloat vertices[] = {
 	0, -4, 0,
 };
 
+
+
+
+
 void initVBO()//vbo的生成与vao的绑定
 {
 	//create vertex buffers
@@ -62,21 +64,22 @@ void initVBO()//vbo的生成与vao的绑定
 	glBindVertexArray(0);
 }
 
+Model crytek("D:/VSProject/assimp/nanosuit/nanosuit.obj");
 void init()
 {
-	initVBO();
-	shader.compileShader("./../bezier.vs", GLSLShader::VERTEX);
+	shader.compileShader("./../model.vs", GLSLShader::VERTEX);
 	std::cout << shader.log() << std::endl;
-	shader.compileShader("./../bezier.geo", GLSLShader::GEOMETRY);
-	std::cout << shader.log() << std::endl;
-	shader.compileShader("./../bezier.frag", GLSLShader::FRAGMENT);
+	shader.compileShader("./../model.frag", GLSLShader::FRAGMENT);
 	std::cout << shader.log() << std::endl;
 	if (!shader.link()){
 		std::cout << "shader link failed\n" << std::endl;
 		std::cout << shader.log() << std::endl;
+		system("pause");
 	}
 	shader.printActiveAttribs();
 	shader.printActiveUniforms();
+
+	
 }
 
 void display()
@@ -100,18 +103,17 @@ void display()
 	//use vaoID & draw quads
 
 	glm::mat4 view;
-	view = glm::lookAt(glm::vec3(0.0, 0.0, 8.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	view = glm::lookAt(glm::vec3(0.0, 0.0, 10.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 	glm::mat4 projection = glm::perspective(GLfloat(45.0), (GLfloat)WIDTH / (GLfloat)HEIGHT, 0.1f, 100.0f);
 	glm::mat4 rotate = arcball.GetArcballMatrix();
 	glm::mat4 model;
-	glm::mat4 MVP = projection * view * model;
 
-	shader.setUniform("MVP", MVP);
-	shader.setUniform("num", 100);
-	glBindVertexArray(vao);
-	glDrawArrays(GL_POINTS, 0, 1);
+	shader.setUniform("projection", projection);
+	shader.setUniform("view", view);
+	shader.setUniform("model", model);
+	
+	crytek.Draw(shader);
 
-	glBindVertexArray(0);
 	glUseProgram(0);
 	//glFlush();
 	glutSwapBuffers();
