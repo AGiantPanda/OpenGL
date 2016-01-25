@@ -33,12 +33,6 @@ void Model::loadModel(std::string path)
 
 void Model::processNode(aiNode* node, const aiScene* scene)
 {
-
-	if (!node || !scene)
-	{
-		return;
-	}
-	
 	// Process each mesh located at the current node
 	for (GLuint i = 0; i < node->mNumMeshes; i++)
 	{

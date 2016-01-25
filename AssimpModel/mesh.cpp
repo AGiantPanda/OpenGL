@@ -17,6 +17,11 @@ Mesh::Mesh(
 	setupMesh();
 }
 
+Mesh::~Mesh()
+{
+
+};
+
 void Mesh::setupMesh()
 {
 	glGenVertexArrays(1, &VAO);
@@ -77,7 +82,7 @@ void Mesh::Draw(myShader shader)
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
 
-	// Also set each mesh's shininess property to a default value (if you want you could extend this to another mesh property and possibly change this value)
+	// Also set each mesh's shininess property to a default value
 	glUniform1f(glGetUniformLocation(shader.getHandle(), "material.shininess"), 16.0f);
 
 	// Draw mesh

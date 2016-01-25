@@ -35,16 +35,18 @@ class myShader;
 class Mesh
 {
 public:
-	std::vector<Vertex> vertices;
-	std::vector<GLuint> indices;
-	std::vector<Texture> textures;
 	Mesh(
 		std::vector<Vertex> vertices, 
 		std::vector<GLuint> indices, 
 		std::vector<Texture> textures
 		);
+	~Mesh();
+	
 	void Draw(myShader shader);
 
+	std::vector<Vertex> vertices;
+	std::vector<GLuint> indices;
+	std::vector<Texture> textures;
 private:
 	GLuint VAO, VBO, EBO;
 	void setupMesh();
