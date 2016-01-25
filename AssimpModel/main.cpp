@@ -64,7 +64,7 @@ void initVBO()//vbo的生成与vao的绑定
 	glBindVertexArray(0);
 }
 
-Model crytek("D:/VSProject/assimp/nanosuit/nanosuit.obj");
+Model crytek;
 void init()
 {
 	shader.compileShader("./../model.vs", GLSLShader::VERTEX);
@@ -78,8 +78,7 @@ void init()
 	}
 	shader.printActiveAttribs();
 	shader.printActiveUniforms();
-
-	
+	crytek.loadModel("D:/VSProject/assimp/nanosuit/nanosuit.obj");
 }
 
 void display()
@@ -93,20 +92,25 @@ void display()
 		frame = 0;
 	}
 	
+	glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	shader.use();
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glEnable(GL_DEPTH_TEST);
 
-	//glEnable(GL_CULL_FACE);
-	//glFrontFace(GL_CCW);
-	//glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
+	glFrontFace(GL_CCW);
+	glCullFace(GL_BACK);
 	//use vaoID & draw quads
 
 	glm::mat4 view;
-	view = glm::lookAt(glm::vec3(0.0, 0.0, 10.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
+	view = glm::lookAt(glm::vec3(0.0, 0.0, 5.0), glm::vec3(0.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0));
 	glm::mat4 projection = glm::perspective(GLfloat(45.0), (GLfloat)WIDTH / (GLfloat)HEIGHT, 0.1f, 100.0f);
 	glm::mat4 rotate = arcball.GetArcballMatrix();
 	glm::mat4 model;
+	model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f));
+	model = glm::scale(model, glm::vec3(0.2f));
+	model = rotate*model;
 
 	shader.setUniform("projection", projection);
 	shader.setUniform("view", view);
@@ -129,10 +133,12 @@ bool firstMouse = true;
 void mouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_LEFT_BUTTON&&state == GLUT_DOWN){
+		arcball.Model_opr(ARCBALL_Opr::ROTATE_ON);
 		lastX = (GLfloat)x;
 		lastY = (GLfloat)y;
 	}
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_UP){
+		arcball.Model_opr(ARCBALL_Opr::ROTATE_OFF);
 	}
 	if (button == GLUT_RIGHT_BUTTON&&state == GLUT_DOWN){
 		lastX = (GLfloat)x;
@@ -145,6 +151,7 @@ void mouse(int button, int state, int x, int y)
 
 void motion(int x, int y)
 {
+	arcball.motion(glm::vec2(lastX, lastY), glm::vec2(x, y));
 	lastX = (GLfloat)x;
 	lastY = (GLfloat)y;
 	glutPostRedisplay();

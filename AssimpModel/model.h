@@ -24,16 +24,14 @@ class myShader;
 class Model
 {
 public:
-	Model(GLchar* path)
-	{		loadModel(path);
-	}
-	void Draw(myShader shader);
+	Model();
+	void Draw(myShader shader);
+	void loadModel(std::string path);
 private:
 	std::vector<Mesh> meshes;
 	std::string directory;
 	std::vector<Texture> textures_loaded;
-
-	void loadModel(std::string path);
+	
 	void processNode(aiNode* node, const aiScene* scene);
 	Mesh processMesh(aiMesh* mesh, const aiScene* scene);	std::vector<Texture> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
 };
