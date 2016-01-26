@@ -4,7 +4,8 @@ in vec2 TexCoords;
 
 out vec4 color;
 
-unifrom sampler2D texture_diffuse1;
+uniform sampler2D texture_diffuse1;
+uniform sampler2D texture_specular1;
 
 void main()
 {

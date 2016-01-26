@@ -43,9 +43,9 @@ GLfloat vertices[] = {
 	0, -4, 0,
 };
 
-
-
-
+glm::vec3 translations[64];
+int index = 0;
+GLfloat offset = 0.1f;
 
 void initVBO()//vbo的生成与vao的绑定
 {
@@ -67,6 +67,15 @@ void initVBO()//vbo的生成与vao的绑定
 Model crytek;
 void init()
 {
+	for (GLint z = -200; z < 200; z += 50){
+			for (GLint x = -200; x < 200; x += 50){
+				glm::vec3 translation;
+				translation.x = (GLfloat)x / 10.0f + offset;
+				translation.y = 0;
+				translation.z = (GLfloat)z / 10.0f + offset;
+				translations[index++] = translation;
+		}
+	}
 	shader.compileShader("./../model.vs", GLSLShader::VERTEX);
 	std::cout << shader.log() << std::endl;
 	shader.compileShader("./../model.frag", GLSLShader::FRAGMENT);
@@ -111,11 +120,20 @@ void display()
 	model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f));
 	model = glm::scale(model, glm::vec3(0.2f));
 	model = rotate*model;
-
+	
 	shader.setUniform("projection", projection);
 	shader.setUniform("view", view);
 	shader.setUniform("model", model);
 	
+	for (GLuint i = 0; i < 100; i++){
+		std::stringstream ss;
+		std::string index;
+		ss << i;
+		index = ss.str();
+		GLint location = glGetUniformLocation(shader.getHandle(), ("offsets[" + index + "]").c_str());
+		glUniform3f(location, translations[i].x, translations[i].y, translations[i].z);
+	}
+
 	crytek.Draw(shader);
 
 	glUseProgram(0);
