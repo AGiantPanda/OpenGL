@@ -1,0 +1,102 @@
+#version 430 core
+struct Intersection
+{
+    float distance;
+    bool isHit;
+    vec3 position;
+    vec3 normal;
+};
+
+struct Ray
+{
+    vec3 origin;
+    vec3 dir;
+};
+
+struct Perspective
+{
+    float fov;
+    float aspect;
+};
+
+struct Sphere
+{
+    vec3 center;
+    float radius;
+};
+
+in vec2 Position;
+out vec4 color;
+
+uniform mat4 model;
+uniform mat4 view;
+uniform Perspective camera;
+uniform Sphere sphere;
+
+Ray GenerateRay(float x, float y, Perspective camera);
+Intersection isSphereIntersected(Sphere sphere, Ray ray);
+
+void main()
+{    
+    Sphere m_sphere;
+    m_sphere.center = vec3(view * model * vec4(sphere.center, 1.0));
+    m_sphere.radius = sphere.radius;
+    
+    Ray ray = GenerateRay(Position.x, Position.y, camera);
+    Intersection result = isSphereIntersected(m_sphere, ray);
+    
+    float depth = 0.0;
+    float maxDepth = 20.0;
+    if(result.isHit == true)
+    {
+        depth = result.distance / maxDepth;
+        depth = depth < 1.0 ? depth : 1.0;
+        depth = 1.0 - depth;
+    }
+    else{
+        discard;
+    }
+    
+    //render the depth
+    //color = vec4(depth, depth, depth, 1.0);
+    //render the normal
+    color = vec4((result.normal + 1.0) / 2, 1.0);
+}
+
+Ray GenerateRay(float x, float y, Perspective camera)
+{
+    vec3 dir = vec3(0.0, 0.0, -1.0);
+    vec3 u = vec3(0.0, 1.0, 0.0);
+    float fovScale = tan(radians(camera.fov * 0.5));
+    
+    vec3 r = cross(dir, u) * (x * fovScale);
+    u = u * (y * fovScale * camera.aspect);
+    dir = dir + r + u;
+    Ray ray;
+    ray.origin = vec3(0.0, 0.0, 0.0);
+    ray.dir = normalize(dir);
+    return ray;
+}
+
+Intersection isSphereIntersected(Sphere sphere, Ray ray)
+{
+    Intersection result;
+    result.isHit = false;
+
+    vec3 v = ray.origin - sphere.center;
+    float _vd = dot(v, ray.dir);
+    float _vd_sq = _vd * _vd;
+    float _ac = dot(v, v) - sphere.radius * sphere.radius;
+    if(_vd <= 0)
+    {
+        if(_vd_sq - _ac >=0)
+        {
+            float t = -_vd - sqrt(_vd_sq - _ac);
+            result.distance = t;
+            result.isHit = true;
+            result.position = ray.origin + t * ray.dir;
+            result.normal = normalize(result.position - sphere.center);
+        }
+    }
+    return result;
+}
